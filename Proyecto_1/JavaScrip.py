@@ -7,56 +7,77 @@ class JavaScrip(object):
     def Analisis_S(self, entrada):
         estado = 1
         palabra = ""
-        token = entrada.splitline()
-        for linea in token:
-            letras = list(linea)
-            for letra in letras:
+        lineas = entrada.splitline()
+        for fila in range(len(lineas)):
+            letra = lsit(lineas[i])
+            for columna in range(len(letra)-1):
                 if estado == 1:
-                    if letra.isalpha:
-                        palabra += letra
+                    if letra[columna] == '/':
                         estado = 2
 
-                    if letra.isdigit:
-                        palabra += letra
+                    if letra[columna].isalpha():
                         estado = 3
 
-                    if (not(letra.isalpha) and not(letra.isdigit)):
-                        palabra += letra
+                    if letra[columna].isdigit():
                         estado = 4
 
-                if esta == 2:
-                    if letra.isalpha:
-                        palabra += letra
-
-                    else:
-                        if (letra == " " or letra == '\n'):
-                            lexema
-                        else:
-                            palabra += letra
-
-                if esta == 3:
-                    if letra.isdigit:
-                        palabra += letra
-
-                    elif letra == ".":
-                        palabra += letra
+                    if letra[columna] == '\"':
                         estado = 6
 
-                if esta == 4:
+                if estado == 2:
+                    if letra[columna] == '/':
+                        estado = 7
 
-                if esta == 5:
+                    if letra[columna] == '*':
+                        estado = 8
+                if estado == 3:
+                    if letra[columna].isalpha():
+                        estado = 3
 
-                if esta == 6:
+                    if letra[columna].isdigit() or letra[columna] == '_':
+                        estado = 9
 
-                if esta == 7:
+                if estado == 4:
+                    if letra[columna].isdigit():
+                        estado = 4
 
-                if esta == 8:
+                    if letra[columna] == '.':
+                        estado = 10
 
-                if esta == 9:
+                if estado == 5:
+                    estado = 11
+                if estado == 6:
+                    if letra[columna] == '\"' :
+                        estado = 12
 
-                if esta == 10:
-
-                if esta == 11:
-
-                if esta == 12:
+                if estado == 7:
+                    if columna < len(letra):
+                        estado = 1
+                if estado == 8:
+                    if letra[columna] == '*':
+                        estado = 13
+                if estado == 9:
+                    if letra[columna].isdigit() and letra[columna].isalpha() and letra[columna]=='_':
+                        estado = 9
+                    else:
+                        estado = 1
+                if estado == 10:
+                    if letra[columna].isdigit():
+                        estado = 14
+                    else:
+                        estado = 1
+                if estado == 11:
+                    estado = 1
+                if estado == 12:
+                    estado = 1
+                if estado == 13:
+                    if letra[columna] == '/':
+                        estado = 15
+                if estado == 14:
+                    if letra[columna].isdigit():
+                        estado = 14
+                    else:
+                        estado = 1
+                if estado == 15:
+                    estado = 1
 
