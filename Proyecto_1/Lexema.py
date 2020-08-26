@@ -1,10 +1,10 @@
 class Lexema(object):
     """description of class"""
-    numero
-    fila
-    culumna
-    lexema
-    descripcion
+    numero = 0
+    fila = 0
+    culumna = 0
+    lexema = ""
+    descripcion = ""
 
     def __init__(self, numero,fila, columna, lexema, descripcion):
         self.numero = numero

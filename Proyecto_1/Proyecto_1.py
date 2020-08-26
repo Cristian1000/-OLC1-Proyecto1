@@ -5,6 +5,7 @@ from tkinter import scrolledtext
 from tkinter import messagebox   
 from tkinter.ttk import *
 import string
+from JavaScrip import *
 
 class  Venta():
     ruta=""
@@ -22,7 +23,7 @@ class  Venta():
         self.file_item = Menu(self.menu)  
         self.file_item.add_command(label='Nuevo Archivo', command=self.abrirFile)
         self.file_item.add_separator()
-        self.file_item.add_command(label='Analizar', command=self.separar)
+        self.file_item.add_command(label='Analizar', command=self.Analizar)
         self.file_item.add_separator()
         self.file_item.add_command(label='Guardar', command=self.guardar)
         self.file_item.add_separator()
@@ -48,11 +49,10 @@ class  Venta():
         self.menu.add_cascade(label='Reportes', menu=self.report_item)
         self.window.config(menu=self.menu)
         
-        # propiedades del textarea
+        
         self.txtEntrada = scrolledtext.ScrolledText(self.window,width=80,height=25)   
         self.txtEntrada.place(x=50, y = 50)
-        #ent = txtEntrada.get("1.0","10.10")
-        #print("ent: ",ent)
+        
 
         self.combo = Combobox(self.window)
         self.combo['values']= ("HTML", "CSS", "Java Scrip")
@@ -67,7 +67,7 @@ class  Venta():
         self.window.mainloop()
 
     def Analyze(self):
-        entrada = self.txtEntrada.get("1.0", END) #fila 1 col 0 hasta fila 2 col 10
+        entrada = self.txtEntrada.get("1.0", END) 
         retorno = lexer(entrada)
         self.txtConsola.delete("1.0", END)
         self.txtConsola.insert("1.0", retorno)
@@ -105,12 +105,31 @@ class  Venta():
     def separar(self):
         #lineas = list()
         texto = str(self.txtEntrada.get("1.0", "end-1c"))
-        lineas = texto.splitlines()
+        lineas = texto.split('\n')
         letra = list(lineas[0])
+        a= ""
         for el in letra:
-            print(el)
-            #self.txtConsola.delete("1.0", END) 
-            #self.txtConsola.insert("1.0", el)
+            a+=el + '\n'
+        self.txtConsola.delete("1.0", END) 
+        self.txtConsola.insert("1.0", a)
 
+    def Analizar(self):
+        valor = self.combo.get()
+        if valor == "HTML":
+            messagebox.showinfo('Project 1', 'Se analizo el archivo HTML')
+        elif valor == 'CSS':
+            messagebox.showinfo('Project 1', 'Se analizo el Archivo CSS')
+        elif valor == 'Java Scrip':
+            Java = JavaScrip()
+            entrad = str(self.txtEntrada.get("1.0", "end-1c"))
+            Lista_Token = list()
+            Java.Analisis_L(entrad)
+            Lista_Token = Java.Regresar_Lista()
+            messagebox.showinfo('Project 1', 'Se analizo el Archivo Java Scrip')
+            en = ""
+            for a in Lista_Token:
+                en += a.get_Lexema() + '\n'
 
+            self.txtConsola.delete("1.0", END) 
+            self.txtConsola.insert("1.0", en)
 ventana = Venta()
