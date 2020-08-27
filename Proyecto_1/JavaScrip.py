@@ -16,11 +16,12 @@ class JavaScrip(object):
         lineas = en.split('\n')
         fila = 0
         while fila < len(lineas):
-            
+            primero = ""
             letra = list(lineas[fila])
             columna = 0
             while columna < len(letra):
-                #messagebox.showinfo('Project 1', str(len(letra)))
+                print(letra[columna] + " " + str(estado))
+                
                 if estado == 1:
                     if letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
                         palabra += letra[columna]
@@ -44,29 +45,29 @@ class JavaScrip(object):
                         columna +=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
                     
-                    if letra[columna] != '\"' and not(letra[columna].isnumeric()) and not(letra[columna].isalpha()) and letra[columna] != '/':
+                    if estado <= 1:
                         self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
                         numToken+=1
                         palabra = ""
                         estado = 1
-
+                    messagebox.showinfo('Project 1', str(columna) + " " + palabra)
                 if estado == 2:
                     
                     if letra[columna] == '/':
                         estado = 7
-                        columna += 1
                         palabra = ""
-
-                    if letra[columna] == '*':
+                        
+                    elif letra[columna] == '*':
                         estado = 8
-                        columna += 1
+                        primero = "no"
                         palabra = ""
 
-                    if palabra != "":
-                        self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
-                        numToken+=1
-                        estado = 1
-                        palabra = ""
+                    elif letra[columna] != '/' and letra[columna] != '*':
+                        estado = estado
+                        #self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
+                        #numToken+=1
+                        #estado = 1
+                        #palabra = ""
 
                 if estado == 3:
                     if letra[columna].isalpha() or letra[columna].isnumeric() or letra[columna] == "_":
@@ -76,7 +77,6 @@ class JavaScrip(object):
                             columna += 1
                     else:
                         estado = 1
-                        print("Se detecto un simbolo" + letra[columna])
                         if palabra in self.Reservadas:
                             self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
                             numToken+=1
@@ -121,13 +121,14 @@ class JavaScrip(object):
                         
 
                 if estado == 7:
-                    if columna < len(letra):
-                        estado = 1
+                    estado = 1
+                    columna = len(letra)
 
                 if estado == 8:
-                    if letra[columna] == '*':
+                    if letra[columna] == '*' and primero != "no":
                         estado = 13
-                        columna += 1
+                    if primero == "no":
+                        primero = ""
 
                 if estado == 9:
                     if letra[columna].isdigit() or letra[columna].isalpha() or letra[columna]=='_':
@@ -170,6 +171,7 @@ class JavaScrip(object):
 
                 if estado == 15:
                     estado = 1
+                
                 columna+=1
                 
             fila += 1
