@@ -8,65 +8,93 @@ class JavaScrip(object):
     Reservadas = ["await","break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "let", "static", "null", "true", "false" ]
 
     def Analisis_L(self, entrada):
-        
+        self.Token.clear()
         estado = 1
         numToken = 1
         palabra = ""
         en = str(entrada)
         lineas = en.split('\n')
-        for fila in range(len(lineas)):
-            #messagebox.showinfo('Project 1', str(len(lineas)))
+        fila = 0
+        while fila < len(lineas):
+            
             letra = list(lineas[fila])
-            for columna in range(len(letra)-1):
+            columna = 0
+            while columna < len(letra):
+                #messagebox.showinfo('Project 1', str(len(letra)))
                 if estado == 1:
+                    if letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
+                        palabra += letra[columna]
+
                     if letra[columna] == '/':
                         estado = 2
-                    elif letra[columna].isalpha():
+                        columna+=1
+
+                    if letra[columna].isalpha():
                         estado = 3
-                        palabra += letra[columna]
-                        #messagebox.showinfo('Project 1', 'es una letra')
-                    elif letra[columna].isdigit():
+                        columna+=1
+                        #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
+
+                    if letra[columna].isnumeric():
                         estado = 4
-                        palabra += letra[columna]
-                        #messagebox.showinfo('Project 1', 'es un digito')
-                    elif letra[columna] == '\"':
+                        columna+=1
+                        #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
+
+                    if letra[columna] == '\"':
                         estado = 6
-                    else:
-                        self.agregar(numToken, fila, columna, letra[columna], "es un simbolo")
+                        columna +=1
+                        #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
+                    
+                    if letra[columna] != '\"' and not(letra[columna].isnumeric()) and not(letra[columna].isalpha()) and letra[columna] != '/':
+                        self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
+                        numToken+=1
+                        palabra = ""
                         estado = 1
-                        numToken+= 1
+
                 if estado == 2:
+                    
                     if letra[columna] == '/':
                         estado = 7
+                        columna += 1
+                        palabra = ""
 
                     if letra[columna] == '*':
                         estado = 8
+                        columna += 1
+                        palabra = ""
+
+                    if palabra != "":
+                        self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
+                        numToken+=1
+                        estado = 1
+                        palabra = ""
+
                 if estado == 3:
-                    if letra[columna].isalpha():
-                        estado = 3
+                    if letra[columna].isalpha() or letra[columna].isnumeric() or letra[columna] == "_":
                         palabra += letra[columna]
-                    elif letra[columna].isdigit() or letra[columna] == '_':
-                        estado = 9
-                        palabra += letra[columna]
+                        if letra[columna].isnumeric() or letra[columna] == "_":
+                            estado = 9
+                            columna += 1
                     else:
+                        estado = 1
+                        print("Se detecto un simbolo" + letra[columna])
                         if palabra in self.Reservadas:
                             self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
                             numToken+=1
                             columna-=1
                             palabra = ""
-                            estado = 1
                         else:
                             self.agregar(numToken, fila, columna, palabra, "Es un ID")
                             numToken+=1
                             columna-=1
                             palabra = ""
-                            estado = 1
+
                 if estado == 4:
                     if letra[columna].isdigit():
                         estado = 4
                         palabra+=letra[columna]
                     elif letra[columna] == '.':
                         estado = 10
+                        columna += 1
                         palabra += letra[columna]
                     else:
                         self.agregar(numToken, fila, columna, palabra, "Es un número")
@@ -82,22 +110,25 @@ class JavaScrip(object):
                     columna-=1
                     palabra=""
                     estado = 1
+
                 if estado == 6:
-                    if letra[columna] == '\"' :
+                    palabra += letra[columna]
+                    if (letra[columna] == "\"" ):
                         estado = 1
                         self.agregar(numToken, fila, columna, palabra, "Es una cadena")
                         numToken+=1
-                        columna-=1
                         palabra=""
-                    else:
-                        palabra += letra[columna]
+                        
 
                 if estado == 7:
                     if columna < len(letra):
                         estado = 1
+
                 if estado == 8:
                     if letra[columna] == '*':
                         estado = 13
+                        columna += 1
+
                 if estado == 9:
                     if letra[columna].isdigit() or letra[columna].isalpha() or letra[columna]=='_':
                         palabra+=letra[columna]
@@ -107,32 +138,41 @@ class JavaScrip(object):
                         columna-=1
                         palabra=""
                         estado = 1
+
                 if estado == 10:
                     if letra[columna].isdigit():
                         palabra+=letra[columna]
                         estado = 14
+                        columna += 1
                     else:
                         estado = 1
+
                 if estado == 11:
                     estado = 1
+
                 if estado == 12:
                     self.agregar(numToken, fila, columna, palabra, "Es un cadena")
                     numToken+=1
                     columna-=1
                     palabra=""
                     estado = 1
+
                 if estado == 13:
                     if letra[columna] == '/':
                         estado = 15
+                        columna += 1
+
                 if estado == 14:
                     if letra[columna].isdigit():
                         estado = 14
                     else:
                         estado = 1
+
                 if estado == 15:
                     estado = 1
-        
-            
+                columna+=1
+                
+            fila += 1
     def agregar(self,num, fila , columna, lex, des):
         nuevo = Lexema(num, fila, columna, lex, des)
         self.Token.append(nuevo)
@@ -143,4 +183,7 @@ class JavaScrip(object):
     def imprimir(self, lista):
         for a in lista:
             print(a)
+
+    def Limpiar(self):
+        self.Token.clear()
         

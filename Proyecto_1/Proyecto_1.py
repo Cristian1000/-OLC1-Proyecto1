@@ -9,6 +9,7 @@ from JavaScrip import *
 
 class  Venta():
     ruta=""
+    Lista_Token = list()
     def __init__(self):
         self.window = Tk()
         self.txtEntrada = Entry(self.window,width=10)
@@ -120,15 +121,17 @@ class  Venta():
         elif valor == 'CSS':
             messagebox.showinfo('Project 1', 'Se analizo el Archivo CSS')
         elif valor == 'Java Scrip':
+            self.Lista_Token = []
             Java = JavaScrip()
             entrad = str(self.txtEntrada.get("1.0", "end-1c"))
-            Lista_Token = list()
+            
             Java.Analisis_L(entrad)
-            Lista_Token = Java.Regresar_Lista()
+            self.Lista_Token = Java.Regresar_Lista()
+            
             messagebox.showinfo('Project 1', 'Se analizo el Archivo Java Scrip')
             en = ""
-            for a in Lista_Token:
-                en += a.get_Lexema() + '\n'
+            for a in self.Lista_Token:
+                en += a.get_Lexema() + "  "+ a.get_Descripcion() +'\n'
 
             self.txtConsola.delete("1.0", END) 
             self.txtConsola.insert("1.0", en)
