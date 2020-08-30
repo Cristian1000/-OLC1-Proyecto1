@@ -186,6 +186,4 @@ class JavaScrip(object):
         for a in lista:
             print(a)
 
-    def Limpiar(self):
-        self.Token.clear()
         
