@@ -50,7 +50,7 @@ class JavaScrip(object):
                         numToken+=1
                         palabra = ""
                         estado = 1
-                    messagebox.showinfo('Project 1', str(columna) + " " + palabra)
+                    
                 if estado == 2:
                     
                     if letra[columna] == '/':

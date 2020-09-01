@@ -6,6 +6,7 @@ from tkinter import messagebox
 from tkinter.ttk import *
 import string
 from JavaScrip import *
+from Analisis_CSS import *
 
 class  Venta():
     ruta=""
@@ -119,7 +120,20 @@ class  Venta():
         if valor == "HTML":
             messagebox.showinfo('Project 1', 'Se analizo el archivo HTML')
         elif valor == 'CSS':
+            CSS = Analisis_CSS()
+            entrada_CSS = str(self.txtEntrada.get("1.0", "end-1c"))
+            CSS.Analisis(entrada_CSS)
+            self.Lista_Token = CSS.Regresar_Lista()
+
             messagebox.showinfo('Project 1', 'Se analizo el Archivo CSS')
+
+            en = ""
+            for a in self.Lista_Token:
+                en += a.get_Lexema() + "  "+ a.get_Descripcion() +'\n'
+
+            self.txtConsola.delete("1.0", END) 
+            self.txtConsola.insert("1.0", en)
+
         elif valor == 'Java Scrip':
             self.Lista_Token = []
             Java = JavaScrip()

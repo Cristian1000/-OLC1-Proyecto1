@@ -20,36 +20,47 @@ class Analisis_CSS(object):
             letra = list(lineas[fila])
             columna = 0
             while columna < len(letra):
-
+                
                 if estado == 1:
+                    ver = ""
+
                     if letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
                         palabra += letra[columna]
 
                     if letra[columna] == '/':
                         estado = 2
                         columna += 1
+                        palabra = ""
+                        ver = "en"
 
-                    if letra[columna].isalpha():
+                    if letra[columna].isalpha() and ver == "":
                         estado = 3
                         columna += 1
+                        ver = "en"
 
-                    if letra[columna].isnumeric():
+                    if letra[columna].isnumeric() and ver == "":
                         estado = 4
                         columna += 1
+                        ver = "en"
 
-                    if letra[columna] == '#':
+                    if letra[columna] == '#' and ver == "":
                         estado = 6
                         columna += 1
+                        ver = "en"
 
-                    if letra[columna] == '\"':
+                    if letra[columna] == '\"' and ver == "":
                         estado = 7
                         columna += 1
+                        ver = "en"
+
 
                     if estado <= 1:
                         self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
                         numToken+=1
                         palabra = ""
                         estado = 1
+
+
 
                 if estado == 2:
                     if letra[columna] == '*':
@@ -62,22 +73,27 @@ class Analisis_CSS(object):
                         palabra += letra[columna]
                         ver = "en"
 
-                    if letra[columna].isnumeric() or letra[columna] == '-' or letra[columna] == '_':
+                    elif letra[columna].isnumeric() or letra[columna] == '-' or letra[columna] == '_':
+                        
+                        palabra += letra[columna]
                         estado = 9
                         columna +=1
-                        palabra += letra[columna]
                         ver = "en"
-                    if ver == "":
+
+                    elif ver == "":
                         if palabra in self.Reservada:
                             self.agregar(numToken, fila, columna, palabra, "Es una Palabra reservada")
                             numToken+=1
                             palabra = ""
                             estado = 1
+                            columna -= 1
                         else:
                             self.agregar(numToken, fila, columna, palabra, "Es un ID")
                             numToken+=1
                             palabra = ""
                             estado = 1
+                            columna -= 1
+
                 if estado == 4:
                     ver = ""
                     if letra[columna].isnumeric(): 
@@ -85,14 +101,15 @@ class Analisis_CSS(object):
                         ver = "en"
                     if letra[columna] == '.':
                         estado = 11
+                        columna += 1
                         ver = "en"
                         palabra += letra[columna]
                     if letra[columna].isalpha():
                         palabra += letra[columna]
                         estado = 10
+                        columna += 1
                         ver = "en"
                     if letra[columna] == '%':
-                        estado = 12
                         self.agregar(numToken, fila, columna, palabra, "Es un Número de porcentaje")
                         numToken+=1
                         palabra = ""
@@ -104,6 +121,7 @@ class Analisis_CSS(object):
                         numToken+=1
                         palabra = ""
                         estado = 1
+                        columna -= 1
 
                 if estado == 5:
                     estado = 1
@@ -121,6 +139,7 @@ class Analisis_CSS(object):
                         self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
                         numToken+=1
                         palabra = ""
+                        columna -= 1
 
                 if estado == 8:
                     if letra[columna] == '*':
@@ -137,11 +156,13 @@ class Analisis_CSS(object):
                             numToken+=1
                             palabra = ""
                             estado = 1
+                            columna -= 1
                         else:
                             self.agregar(numToken, fila, columna, palabra, "Es un ID")
                             numToken+=1
                             palabra = ""
                             estado = 1
+                            columna -= 1
 
                 if estado == 10:
                     if letra[columna].isalpha():
@@ -168,6 +189,7 @@ class Analisis_CSS(object):
                         numToken+=1
                         palabra = ""
                         estado = 1
+                        columna -= 1
 
                 if estado == 14:
                     estado = 1
@@ -195,6 +217,7 @@ class Analisis_CSS(object):
                         self.agregar(numToken, fila, columna, palabra, "Es un Número Real")
                         numToken+=1
                         palabra = ""
+                        columna -= 1
                         estado = 1
 
                 if estado == 17:
