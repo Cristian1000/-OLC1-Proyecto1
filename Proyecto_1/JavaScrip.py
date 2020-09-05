@@ -64,10 +64,10 @@ class JavaScrip(object):
 
                     elif letra[columna] != '/' and letra[columna] != '*':
                         estado = estado
-                        #self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
-                        #numToken+=1
-                        #estado = 1
-                        #palabra = ""
+                        self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
+                        numToken+=1
+                        estado = 1
+                        palabra = ""
 
                 if estado == 3:
                     if letra[columna].isalpha() or letra[columna].isnumeric() or letra[columna] == "_":
