@@ -17,6 +17,7 @@ class JavaScrip(object):
         fila = 0
         while fila < len(lineas):
             primero = ""
+            lineas[fila] += "          "
             letra = list(lineas[fila])
             columna = 0
             while columna < len(letra):

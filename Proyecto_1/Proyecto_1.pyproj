@@ -24,6 +24,9 @@
     <Compile Include="Analisis_CSS.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Analisis_HTML.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="JavaScrip.py">
       <SubType>Code</SubType>
     </Compile>
