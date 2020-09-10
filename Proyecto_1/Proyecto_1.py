@@ -7,6 +7,8 @@ from tkinter.ttk import *
 import string
 from JavaScrip import *
 from Analisis_CSS import *
+from Analisis_HTML import *
+import os
 
 class  Venta():
     ruta=""
@@ -16,7 +18,7 @@ class  Venta():
         self.txtEntrada = Entry(self.window,width=10)
         self.txtConsola = Entry(self.window,width=10)
         self.window.title("Proyecto 1")
-        self.window.geometry('1000x700')
+        self.window.geometry('1200x800')
         
         self.lbl = Label(self.window, text="Proyecto 1", font=("Time New Roman", 15))
         self.lbl.place(x=440, y = 10)
@@ -41,7 +43,7 @@ class  Venta():
         self.report_item.add_separator()
         self.report_item.add_command(label='Errores JAVA SCRIP')
         self.report_item.add_separator()
-        self.report_item.add_command(label='Reporte HTML')    
+        self.report_item.add_command(label='Reporte HTML', command=self.Reporte_Java)    
         self.report_item.add_separator()
         self.report_item.add_command(label='REporte CSS')
         self.report_item.add_separator()
@@ -58,13 +60,13 @@ class  Venta():
 
         self.combo = Combobox(self.window)
         self.combo['values']= ("HTML", "CSS", "Java Scrip")
-        self.combo.place(x=750, y= 50)
+        self.combo.place(x=900, y= 50)
         self.combo.current(0)
 
         self.lbl = Label(self.window, text="Console:")  
-        self.lbl.place(x=50, y = 465)
+        self.lbl.place(x=50, y = 550)
         self.txtConsola = scrolledtext.ScrolledText(self.window,width=80,height=10)  
-        self.txtConsola.place(x=50, y = 490)
+        self.txtConsola.place(x=50, y = 600)
         
         self.window.mainloop()
 
@@ -115,17 +117,19 @@ class  Venta():
         self.txtConsola.delete("1.0", END) 
         self.txtConsola.insert("1.0", a)
 
+    def Reporte_Java(self):
+        os.system("dot -Tpng ID.dot -o ID.png")
+        os.system("dot -Tpng cadena.dot -o cadena.png")
+        os.system("dot -Tpng numero.dot -o numero.png")
+
     def Analizar(self):
         valor = self.combo.get()
         if valor == "HTML":
+            HTML = Analisis_HTML()
+            entrada_HTML = str(self.txtEntrada.get("1.0", "end-1c"))
+            HTML.Analisis_L(entrada_HTML)
+            self.Lista_Token = HTML.Regresar_Lista()
             messagebox.showinfo('Project 1', 'Se analizo el archivo HTML')
-        elif valor == 'CSS':
-            CSS = Analisis_CSS()
-            entrada_CSS = str(self.txtEntrada.get("1.0", "end-1c"))
-            CSS.Analisis(entrada_CSS)
-            self.Lista_Token = CSS.Regresar_Lista()
-
-            messagebox.showinfo('Project 1', 'Se analizo el Archivo CSS')
 
             en = ""
             for a in self.Lista_Token:
@@ -133,6 +137,20 @@ class  Venta():
 
             self.txtConsola.delete("1.0", END) 
             self.txtConsola.insert("1.0", en)
+        elif valor == 'CSS':
+            CSS = Analisis_CSS()
+            entrada_CSS = str(self.txtEntrada.get("1.0", "end-1c"))
+            CSS.Analisis(entrada_CSS)
+            self.Lista_Token = CSS.Regresar_Lista()
+            texto = CSS.Reporte_CSS()
+            messagebox.showinfo('Project 1', 'Se analizo el Archivo CSS')
+
+            #en = ""
+            #for a in self.Lista_Token:
+            #    en += a.get_Lexema() + "  "+ a.get_Descripcion() +'\n'
+            
+            self.txtConsola.delete("1.0", END) 
+            self.txtConsola.insert("1.0", texto)
 
         elif valor == 'Java Scrip':
             self.Lista_Token = []
