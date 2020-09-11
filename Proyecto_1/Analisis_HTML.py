@@ -1,5 +1,6 @@
 import string
 from Lexema import *
+import os
 from tkinter import messagebox 
 
 class Analisis_HTML(object):
@@ -7,15 +8,17 @@ class Analisis_HTML(object):
     Token = list()
     Reservadas = ["html", "head", "title", "body", "h1", "h2", "h3", "h4", "h5", "h6", "p", "br", "img", "a", "href", "ul", "ol", "li", "style", "src", "table", "th", "tr", "td", "caption", "colgroup", "col", "thead", "tbody", "tfoot", "link", "rel"]
     Simbolos = ["<", ">", "/", "="]
+    nuevo = ""
 
     def Analisis_L(self, entrada):
         self.Token.clear()
         estado = 1
         numToken = 1
         palabra = ""
+        self.Ruta(entrada)
         en = str(entrada)
         lineas = en.split('\n')
-        fila = 0
+        fila = 2
         while fila < len(lineas):
             primero = ""
             lineas[fila] += "          "
@@ -54,7 +57,7 @@ class Analisis_HTML(object):
                         estado = 7
                         columna += 1
 
-                    if ver == "" and letra[columna] != ' ' and letra[columna] != '\t' and letra[columna] != '\n':
+                    if ver == "":
                         columna+=1
                         estado = 4
 
@@ -127,6 +130,7 @@ class Analisis_HTML(object):
                         estado = 1
                 print(palabra + ' ' + str(estado))
                 columna += 1
+            self.agregar(numToken, fila, columna+1,'\n', "Salto de linea")
             fila += 1
 
     def agregar(self,num, fila , columna, lex, des):
@@ -135,3 +139,48 @@ class Analisis_HTML(object):
 
     def Regresar_Lista(self):
         return self.Token
+
+    def Ruta(self, texto):
+        buscar = 0
+        estado = 1
+        en = str(texto)
+        lineas = en.split('\n')
+        listo = ""
+        while buscar < len(lineas) and listo == "":
+            primero = ""
+            lineas[buscar] += "          "
+            letra = list(lineas[buscar])
+            columan = 0
+            while columan < len(letra) and listo == "":
+                if estado == 1:
+                    if letra[columan].isalpha():
+                        self.nuevo += letra[columan]
+
+                    if letra[columan] == ':':
+                        if self.nuevo == "PATHW":
+                            estado = 2
+                            columan += 2
+                            self.nuevo = ""
+                        else:
+                            self.nuevo = ""
+                            columan = len(letra)
+
+                if estado == 2:
+                    if letra[columan] != '-':
+                        self.nuevo += letra[columan]
+                    else:
+                        buscar = len(lineas)
+                        listo = "ya"
+                columan += 1
+            buscar += 1
+        print(self.nuevo)
+
+    def Crear_archivo(self):
+        nuevo_Archivo = ""
+        for a in self.Token:
+            nuevo_Archivo += a.get_Lexema()
+
+        os.system('mkdir ' + self.nuevo)
+        elf.escribir2 = open(self.nuevo+'\\Index.html', "w", encoding="utf-8")
+        self.escribir2.write(automata)
+        self.escribir2.close()

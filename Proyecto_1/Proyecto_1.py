@@ -43,11 +43,11 @@ class  Venta():
         self.report_item.add_separator()
         self.report_item.add_command(label='Errores JAVA SCRIP')
         self.report_item.add_separator()
-        self.report_item.add_command(label='Reporte HTML', command=self.Reporte_Java)    
+        self.report_item.add_command(label='Reporte HTML')    
         self.report_item.add_separator()
         self.report_item.add_command(label='REporte CSS')
         self.report_item.add_separator()
-        self.report_item.add_command(label='Reporte JAVA SCRIP')
+        self.report_item.add_command(label='Reporte JAVA SCRIP', command=self.Reporte_Java)
 
         self.menu.add_cascade(label='Archivo', menu=self.file_item)
         self.menu.add_cascade(label='Reportes', menu=self.report_item)
@@ -121,6 +121,7 @@ class  Venta():
         os.system("dot -Tpng ID.dot -o ID.png")
         os.system("dot -Tpng cadena.dot -o cadena.png")
         os.system("dot -Tpng numero.dot -o numero.png")
+        
 
     def Analizar(self):
         valor = self.combo.get()

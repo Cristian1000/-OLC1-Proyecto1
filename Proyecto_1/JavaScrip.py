@@ -1,17 +1,22 @@
 import string
 from Lexema import *
 from tkinter import messagebox 
+import os
 
 class JavaScrip(object):
     """description of class"""
     Token = list()
     Reservadas = ["await","break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "let", "static", "null", "true", "false" ]
+    simbolos = ["=", "+", "-", "|", "&"]
     grafo1 = ""
     grafo2 = ""
     grafo3 = ""
+    buscar = 0
+    nuevo = ""
 
     def Analisis_L(self, entrada):
         self.Token.clear()
+        self.Ruta(entrada)
         estado = 1
         numToken = 1
         palabra = ""
@@ -46,17 +51,15 @@ class JavaScrip(object):
                         columna+=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
 
-                    if letra[columna] == '\"':
+                    if letra[columna] == '\"' or letra[columna] == '\'':
                         self.grafo3 += "S1 -> S2 [label = \" \\"+letra[columna]+" \"]; \n"
                         estado = 6
                         columna +=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
                     
                     if estado <= 1 and letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
-                        self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
-                        numToken+=1
-                        palabra = ""
-                        estado = 1
+                        columna += 1
+                        estado = 11
                     
                 if estado == 2:
                     
@@ -128,7 +131,8 @@ class JavaScrip(object):
 
                 if estado == 6:
                     
-                    if (letra[columna] == "\"" ):
+                    if letra[columna] == "\"" or letra[columna] == '\'':
+                        palabra += letra[columna]
                         self.grafo3 += "S2 -> S3 [label = \" \\"+letra[columna]+" \"]; \n"
                         self.Generar_Automata3(self.grafo3, "cadena.dot")
                         self.grafo3 = ""
@@ -173,7 +177,18 @@ class JavaScrip(object):
                         estado = 1
 
                 if estado == 11:
-                    estado = 1
+                    if letra[columna] in self.simbolos:
+                        palabra += letra[columna]
+                        self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
+                        numToken+=1
+                        palabra = ""
+                        estado = 1
+                    else:
+                        self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
+                        numToken+=1
+                        palabra = ""
+                        columna -= 1
+                        estado = 1
 
                 if estado == 12:
                     self.agregar(numToken, fila, columna, palabra, "Es un cadena")
@@ -206,6 +221,7 @@ class JavaScrip(object):
                 columna+=1
                 
             fila += 1
+            self.Crear_archivo()
     def agregar(self,num, fila , columna, lex, des):
         nuevo = Lexema(num, fila, columna, lex, des)
         self.Token.append(nuevo)
@@ -243,13 +259,68 @@ class JavaScrip(object):
         
         
     def Generar_Automata3(self, texto, nombre):
-            automata = "digraph g{ \n"
-            automata += "rankdir=LR; \n"
-            automata += "node[shape=doublecircle]; S3; \n"
-            automata += "node[shape=circle]; \n \n"
-            automata += texto
-            automata += "} \n"
+         automata = "digraph g{ \n"
+         automata += "rankdir=LR; \n"
+         automata += "node[shape=doublecircle]; S3; \n"
+         automata += "node[shape=circle]; \n \n"
+         automata += texto
+         automata += "} \n"
 
-            self.escribir2 = open(nombre, "w", encoding="utf-8")
-            self.escribir2.write(automata)
-            self.escribir2.close()
+         self.escribir2 = open(nombre, "w", encoding="utf-8")
+         self.escribir2.write(automata)
+         self.escribir2.close()
+
+    def Ruta(self, texto):
+        estado = 1
+        en = str(texto)
+        lineas = en.split('\n')
+        while self.buscar < len(lineas):
+            primero = ""
+            lineas[self.buscar] += "          "
+            letra = list(lineas[self.buscar])
+            columan = 0
+            while columan < len(letra):
+                if estado == 1:
+                    if letra[columan].isalpha():
+                        self.nuevo += letra[columan]
+
+                    if letra[columan] == ':':
+                        if self.nuevo == "PATHW":
+                            estado = 2
+                            columan += 1
+                            self.nuevo = ""
+                        else:
+                            self.nuevo = ""
+                            columan = len(letra)
+
+                if estado == 2:
+                    if letra[columan] != ' ':
+                        self.nuevo += letra[columan]
+                    else:
+                        self.buscar = len(lineas)
+                columan += 1
+            self.buscar += 1
+
+        print(self.nuevo)
+
+    def Crear_archivo(self):
+        nuevo_Archivo = ""
+        tamaño = 0
+        while tamaño < len(self.Token):
+            nuevo_Archivo += self.Token[tamaño].get_Lexema()
+            if self.Token[tamaño].get_Lexema() == ';' or self.Token[tamaño].get_Lexema() == '{' or self.Token[tamaño].get_Lexema() == '}':
+                nuevo_Archivo += '\n'
+            elif self.Token[tamaño].get_Lexema() != '.':
+                if tamaño < len(self.Token) - 1:
+                    if self.Token[tamaño + 1].get_Lexema() != '.':
+                        nuevo_Archivo += ' '
+                else:
+                    nuevo_Archivo += ' '
+
+            tamaño += 1
+
+        os.system('mkdir ' + self.nuevo)
+        self.escribir2 = open(self.nuevo+'\\JavaScrip.js', "w", encoding="utf-8")
+        self.escribir2.write(nuevo_Archivo)
+        self.escribir2.close()
+
