@@ -1,17 +1,21 @@
 import string
 from Lexema import *
+from Errores import *
 from tkinter import messagebox 
 import os
+import webbrowser
 
 class JavaScrip(object):
     """description of class"""
     Token = list()
+    errores = list() 
     Reservadas = ["await","break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "let", "static", "null", "true", "false" ]
     simbolos = ["=", "+", "-", "|", "&"]
     grafo1 = ""
     grafo2 = ""
     grafo3 = ""
     buscar = 0
+    error = ['$', '@', '#', '^', '?', '~', "°"]
     nuevo = ""
 
     def Analisis_L(self, entrada):
@@ -28,12 +32,23 @@ class JavaScrip(object):
             lineas[fila] += "          "
             letra = list(lineas[fila])
             columna = 0
-            while columna < len(letra):
+            listo = ""
+            while columna < len(letra) and listo == "":
                 print(letra[columna] + " " + str(estado))
                 
                 if estado == 1:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
+
+                    if letra[columna] == ';':
+                        listo = "ya"
+
                     if letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
                         palabra += letra[columna]
+                    else:
+                        self.agregar(numToken, fila, columna, letra[columna], "Es una palabra reservada")
+                        numToken+=1
 
                     if letra[columna] == '/':
                         estado = 2
@@ -57,12 +72,16 @@ class JavaScrip(object):
                         columna +=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
                     
+                    
                     if estado <= 1 and letra[columna] != ' ' and letra[columna] != '\n' and letra[columna] != '\t':
                         columna += 1
                         estado = 11
                     
                 if estado == 2:
-                    
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
+
                     if letra[columna] == '/':
                         estado = 7
                         palabra = ""
@@ -73,13 +92,16 @@ class JavaScrip(object):
                         palabra = ""
 
                     elif letra[columna] != '/' and letra[columna] != '*':
-                        estado = estado
                         self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
                         numToken+=1
                         estado = 1
                         palabra = ""
+                        columna -= 1
 
                 if estado == 3:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
                     if letra[columna].isalpha():
                         self.grafo1 += "S2 -> S2 [label = \" "+letra[columna]+" \"]; \n"
 
@@ -104,15 +126,18 @@ class JavaScrip(object):
                             palabra = ""
 
                 if estado == 4:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
                     if letra[columna].isdigit():
                         self.grafo2 += "S2 -> S2 [label = \" "+letra[columna]+" \"]; \n"
                         estado = 4
                         palabra+=letra[columna]
                     elif letra[columna] == '.':
+                        palabra += letra[columna]
                         self.grafo2 += "S2 -> S3 [label = \" "+letra[columna]+" \"]; \n"
                         estado = 10
                         columna += 1
-                        palabra += letra[columna]
                     else:
                         self.grafo2 = ""
                         self.agregar(numToken, fila, columna, palabra, "Es un número")
@@ -122,6 +147,9 @@ class JavaScrip(object):
                         estado = 1
 
                 if estado == 5:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
                     palabra+= letra[columna]
                     self.agregar(numToken, fila, columna, palabra, "Es un simbolo")
                     numToken+=1
@@ -155,6 +183,10 @@ class JavaScrip(object):
                         primero = ""
 
                 if estado == 9:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
+
                     if letra[columna].isdigit() or letra[columna].isalpha() or letra[columna]=='_':
                         palabra+=letra[columna]
                         self.grafo1 += "S3 -> S3 [label = \" "+letra[columna]+" \"]; \n"
@@ -168,6 +200,9 @@ class JavaScrip(object):
                         estado = 1
 
                 if estado == 10:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
                     if letra[columna].isdigit():
                         self.grafo2 += "S3 -> S4 [label = \" "+letra[columna]+" \"]; \n"
                         palabra+=letra[columna]
@@ -177,7 +212,11 @@ class JavaScrip(object):
                         estado = 1
 
                 if estado == 11:
-                    if letra[columna] in self.simbolos:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
+
+                    if letra[columna] in self.simbolos and listo == "":
                         palabra += letra[columna]
                         self.agregar(numToken, fila, columna, palabra, "Es un Simbolo")
                         numToken+=1
@@ -190,6 +229,8 @@ class JavaScrip(object):
                         columna -= 1
                         estado = 1
 
+                    if palabra == ';':
+                        columna = len(letra)
                 if estado == 12:
                     self.agregar(numToken, fila, columna, palabra, "Es un cadena")
                     numToken+=1
@@ -201,8 +242,13 @@ class JavaScrip(object):
                     if letra[columna] == '/':
                         estado = 15
                         columna += 1
+                    else:
+                        estado = 8
 
                 if estado == 14:
+                    if letra[columna] in self.error:
+                        self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
+                        columna += 1
                     if letra[columna].isdigit():
                         self.grafo2 += "S4 -> S4 [label = \" "+letra[columna]+" \"]; \n"
                         estado = 14
@@ -219,12 +265,19 @@ class JavaScrip(object):
                     estado = 1
                 
                 columna+=1
-                
+            self.agregar(numToken, fila, columna, '\n', "salto de linea")
+            numToken+=1
             fila += 1
-            self.Crear_archivo()
+        self.Crear_archivo()
+        if len(self.errores) >= 0:
+            self.Crear_Html()
     def agregar(self,num, fila , columna, lex, des):
         nuevo = Lexema(num, fila, columna, lex, des)
         self.Token.append(nuevo)
+
+    def Agregar_Error(self, fila, columna, lex, des):
+        nuevo = Errores(fila, columna, lex, des)
+        self.errores.append(nuevo)
 
     def Regresar_Lista(self):
         return self.Token
@@ -303,19 +356,20 @@ class JavaScrip(object):
 
         print(self.nuevo)
 
+
     def Crear_archivo(self):
         nuevo_Archivo = ""
         tamaño = 0
         while tamaño < len(self.Token):
             nuevo_Archivo += self.Token[tamaño].get_Lexema()
-            if self.Token[tamaño].get_Lexema() == ';' or self.Token[tamaño].get_Lexema() == '{' or self.Token[tamaño].get_Lexema() == '}':
-                nuevo_Archivo += '\n'
-            elif self.Token[tamaño].get_Lexema() != '.':
-                if tamaño < len(self.Token) - 1:
-                    if self.Token[tamaño + 1].get_Lexema() != '.':
-                        nuevo_Archivo += ' '
-                else:
-                    nuevo_Archivo += ' '
+            #if self.Token[tamaño].get_Lexema() == ';' or self.Token[tamaño].get_Lexema() == '{' or self.Token[tamaño].get_Lexema() == '}':
+            #    nuevo_Archivo += '\n'
+            #elif self.Token[tamaño].get_Lexema() != '.':
+            #    if tamaño < len(self.Token) - 1:
+            #        if self.Token[tamaño + 1].get_Lexema() != '.':
+            #            nuevo_Archivo += ' '
+            #    else:
+            #        nuevo_Archivo += ' '
 
             tamaño += 1
 
@@ -324,3 +378,21 @@ class JavaScrip(object):
         self.escribir2.write(nuevo_Archivo)
         self.escribir2.close()
 
+    def Crear_Html(self):
+        archivo_error = "<html> \n <head> \n <title>Errores de Java Scrip</title> \n <head> \n <body>"
+
+        archivo_error += "<TABLE BORDER> \n"
+        archivo_error += "  <TR> \n"
+        archivo_error += "      <TH>Fila</TH> <TH>Columna</TH> <TH>Error</TH> \n"
+        archivo_error += "  </TR> \n"
+        for a in self.errores:
+            archivo_error += "  <TR> \n"
+            archivo_error += "      <TD>"+str(a.get_Fila())+"</TD> <TD>"+str(a.get_Columna())+"</TD> <TD>"+a.get_Lexema()+"</TD> \n"
+            archivo_error += "  </TR> \n"
+
+        archivo_error += "</TABLE> \n </body> \n </html>"
+
+        crear = open("Errores de Java Scrip.html", "w", encoding="utf-8")
+        crear.write(archivo_error)
+        crear.close()
+        webbrowser.open_new_tab('Errores de Java Scrip.html')
