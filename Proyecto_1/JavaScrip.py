@@ -37,6 +37,7 @@ class JavaScrip(object):
                 print(letra[columna] + " " + str(estado))
                 
                 if estado == 1:
+                    ver = ""
                     if letra[columna] in self.error:
                         self.Agregar_Error(fila, columna, letra[columna], "Simbolo no reconocido")
                         columna += 1
@@ -50,26 +51,30 @@ class JavaScrip(object):
                         self.agregar(numToken, fila, columna, letra[columna], "Es una palabra reservada")
                         numToken+=1
 
-                    if letra[columna] == '/':
+                    if letra[columna] == '/' and ver == "":
                         estado = 2
+                        ver = "en"
                         columna+=1
 
-                    if letra[columna].isalpha():
+                    if letra[columna].isalpha() and ver == "":
                         self.grafo1 += "S1 -> S2 [label = \" "+letra[columna]+" \"]; \n"
                         estado = 3
                         columna+=1
+                        ver = "en"
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
 
-                    if letra[columna].isnumeric():
+                    if letra[columna].isnumeric() and ver == "":
+                        ver = "en"
                         self.grafo2 += "S1 -> S2 [label = \" "+letra[columna]+" \"]; \n"
                         estado = 4
                         columna+=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
 
-                    if letra[columna] == '\"' or letra[columna] == '\'':
+                    if (letra[columna] == '\"' or letra[columna] == '\'') and var == "":
                         self.grafo3 += "S1 -> S2 [label = \" \\"+letra[columna]+" \"]; \n"
                         estado = 6
                         columna +=1
+                        ver = "en"
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
                     
                     

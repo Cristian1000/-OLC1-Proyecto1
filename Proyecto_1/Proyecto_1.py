@@ -7,6 +7,7 @@ from tkinter.ttk import *
 import string
 from JavaScrip import *
 from Analisis_CSS import *
+from Exprecion import *
 from Analisis_HTML import *
 import os
 
@@ -59,7 +60,7 @@ class  Venta():
         
 
         self.combo = Combobox(self.window)
-        self.combo['values']= ("HTML", "CSS", "Java Scrip")
+        self.combo['values']= ("HTML", "CSS", "Java Scrip", "rmt")
         self.combo.place(x=900, y= 50)
         self.combo.current(0)
 
@@ -79,7 +80,7 @@ class  Venta():
 
     
     def abrirFile(self):
-        nameFile=filedialog.askopenfilename(title = "Seleccione archivo",filetypes = (("js files","*.js"), ("html files","*.html"),("css files","*.css"),("All Files","*.*")))
+        nameFile=filedialog.askopenfilename(title = "Seleccione archivo",filetypes = (("js files","*.js"), ("html files","*.html"),("css files","*.css"),("rmt files","*.rmt"),("All Files","*.*")))
         if nameFile!='':
             archi1=open(nameFile, "r", encoding="utf-8")
             contenido=archi1.read()
@@ -168,4 +169,13 @@ class  Venta():
 
             self.txtConsola.delete("1.0", END) 
             self.txtConsola.insert("1.0", en)
+
+        elif valor == "rmt":
+            exp = Exprecion()
+            entrada = str(self.txtEntrada.get("1.0", "end-1c"))
+            exp.Analisis_L(entrada)
+
+            self.txtConsola.delete("1.0", END) 
+            self.txtConsola.insert("1.0", exp.Resultado())
+
 ventana = Venta()
