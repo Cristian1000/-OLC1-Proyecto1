@@ -25,7 +25,7 @@ class Exprecion(object):
         while fila < len(lineas):
             lineas[fila] += "     "
             letra = list(lineas[fila])
-            columna = 0
+            columna = len(str(fila))
             while columna < len(letra):
                 if estado == 1:
                     ver = ""
@@ -161,19 +161,26 @@ class Exprecion(object):
 
     def A(self):
         if self.preanalisis == 3:
+            ver = ""
             self.parea(3)
             self.A()
             self.parea(4)
             self.OP()
+            ver = "en"
         if self.preanalisis == 1:
             self.parea(1)
             self.OP()
+            ver = "en"
         if self.preanalisis == 2:
             self.parea(2)
             self.OP()
+            ver = "en"
         if self.preanalisis == 6:
             self.SIG()
             self.A()
+            ver = "en"
+        if ver == "":
+            self.Agregar_Error(1, self.Token[self.numero-1].get_Columna() + 1, "Falta un numero o ID", "Error sintactico")
 
     def OP(self):
         if self.preanalisis == 5:

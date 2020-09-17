@@ -11,12 +11,14 @@ class JavaScrip(object):
     errores = list() 
     Reservadas = ["await","break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "let", "static", "null", "true", "false" ]
     simbolos = ["=", "+", "-", "|", "&"]
+    terminacion = [":", ";", ",", "{", "(", " ", ")", ".", "=" , "+"]
     grafo1 = ""
     grafo2 = ""
     grafo3 = ""
     buscar = 0
     error = ['$', '@', '#', '^', '?', '~', "°"]
     nuevo = ""
+
 
     def Analisis_L(self, entrada):
         self.Token.clear()
@@ -31,7 +33,7 @@ class JavaScrip(object):
             primero = ""
             lineas[fila] += "          "
             letra = list(lineas[fila])
-            columna = 0
+            columna = len(str(fila))
             listo = ""
             while columna < len(letra) and listo == "":
                 print(letra[columna] + " " + str(estado))
@@ -70,7 +72,7 @@ class JavaScrip(object):
                         columna+=1
                         #messagebox.showinfo('Project 1', str(estado) +"  " + palabra)
 
-                    if (letra[columna] == '\"' or letra[columna] == '\'') and var == "":
+                    if (letra[columna] == '\"' or letra[columna] == '\'') and ver == "":
                         self.grafo3 += "S1 -> S2 [label = \" \\"+letra[columna]+" \"]; \n"
                         estado = 6
                         columna +=1
@@ -119,16 +121,19 @@ class JavaScrip(object):
                     else:
                         estado = 1
                         self.grafo1 = ""
-                        if palabra in self.Reservadas:
-                            self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
-                            numToken+=1
-                            columna-=1
-                            palabra = ""
+                        if letra[columna] in self.terminacion:
+                            if palabra in self.Reservadas:
+                                self.agregar(numToken, fila, columna, palabra, "Es una palabra reservada")
+                                numToken+=1
+                                columna-=1
+                                palabra = ""
+                            else:
+                                self.agregar(numToken, fila, columna, palabra, "Es un ID")
+                                numToken+=1
+                                columna-=1
+                                palabra = ""
                         else:
-                            self.agregar(numToken, fila, columna, palabra, "Es un ID")
-                            numToken+=1
-                            columna-=1
-                            palabra = ""
+                            self.Agregar_Error(fila, columna, letra[columna], "Patron no reconocido")
 
                 if estado == 4:
                     if letra[columna] in self.error:
@@ -196,13 +201,16 @@ class JavaScrip(object):
                         palabra+=letra[columna]
                         self.grafo1 += "S3 -> S3 [label = \" "+letra[columna]+" \"]; \n"
                     else:
-                        self.Generar_Automata1(self.grafo1, "ID.dot")
-                        self.grafo1 = ""
-                        self.agregar(numToken, fila, columna, palabra, "Es un ID")
-                        numToken+=1
-                        columna-=1
-                        palabra=""
-                        estado = 1
+                        if letra[columna] in self.terminacion:
+                            self.Generar_Automata1(self.grafo1, "ID.dot")
+                            self.grafo1 = ""
+                            self.agregar(numToken, fila, columna, palabra, "Es un ID")
+                            numToken+=1
+                            columna-=1
+                            palabra=""
+                            estado = 1
+                        else:
+                            self.Agregar_Error(fila, columna, letra[columna], "Patron no reconocido")
 
                 if estado == 10:
                     if letra[columna] in self.error:
@@ -302,6 +310,7 @@ class JavaScrip(object):
         self.escribir2 = open(nombre, "w", encoding="utf-8")
         self.escribir2.write(automata)
         self.escribir2.close()
+        
 
     def Generar_Automata2(self, texto, nombre):
         automata = "digraph g{ \n"
@@ -313,7 +322,8 @@ class JavaScrip(object):
 
         self.escribir2 = open(nombre, "w", encoding="utf-8")
         self.escribir2.write(automata)
-        self.escribir2.close()
+        self.escribir2.close
+        os.system(nombre)
         
         
     def Generar_Automata3(self, texto, nombre):
@@ -326,7 +336,8 @@ class JavaScrip(object):
 
          self.escribir2 = open(nombre, "w", encoding="utf-8")
          self.escribir2.write(automata)
-         self.escribir2.close()
+         self.escribir2.close
+         os.system(nombre)
 
     def Ruta(self, texto):
         estado = 1
@@ -400,4 +411,3 @@ class JavaScrip(object):
         crear = open("Errores de Java Scrip.html", "w", encoding="utf-8")
         crear.write(archivo_error)
         crear.close()
-        webbrowser.open_new_tab('Errores de Java Scrip.html')

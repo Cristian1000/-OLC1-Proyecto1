@@ -30,7 +30,7 @@ class Analisis_CSS(object):
             primero = ""
             lineas[fila] += "  "
             letra = list(lineas[fila])
-            columna = 0
+            columna = len(str(fila))
             listo = ""
             while columna < len(letra) and listo == "":
                 
@@ -121,7 +121,6 @@ class Analisis_CSS(object):
                     if ver == "":
                         if letra[columna] in self.terminacion:
                             if palabra in self.Reservada:
-                                self.reporte += "Estado de aceptacion con  "+ palabra + "  \n"
                                 self.agregar(numToken, fila, columna, palabra, "Es una Palabra reservada")
                                 numToken+=1
                                 palabra = ""
@@ -144,7 +143,7 @@ class Analisis_CSS(object):
                                 else:
                                     columna -= 1
                         else:
-                            self.Agregar_Error(fila, columan, letra[columan], "el simbolo no pertenece al patron")
+                            self.Agregar_Error(fila, columna, letra[columna], "el simbolo no pertenece al patron")
                         
                                    
                 if estado == 4:
@@ -429,7 +428,7 @@ class Analisis_CSS(object):
             print(a.get_Lexema() + ' \n')
 
     def Crear_Html(self):
-        archivo_error = "<html> \n <head> \n <title>Errores de Java Scrip</title> \n <head> \n <body>"
+        archivo_error = "<html> \n <head> \n <title>Errores de CSS</title> \n <head> \n <body>"
 
         archivo_error += "<TABLE BORDER> \n"
         archivo_error += "  <TR> \n"
@@ -445,4 +444,3 @@ class Analisis_CSS(object):
         crear = open("Errores de CSS.html", "w", encoding="utf-8")
         crear.write(archivo_error)
         crear.close()
-        webbrowser.open_new_tab('Errores de Java Scrip.html')
